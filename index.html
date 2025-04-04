@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Explorer</title>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        /* Background Animation */
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            padding: 50px;
+            color: white;
+            background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Container */
+        #container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            display: inline-block;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        #container:hover {
+            transform: scale(1.02);
+        }
+
+        /* Input & Button */
+        input {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ffaf7b;
+            border-radius: 8px;
+            outline: none;
+            transition: border 0.3s ease-in-out;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        input:focus {
+            border-color: #ff6f61;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #ff6f61;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            margin-top: 15px;
+            transition: background 0.3s ease-in-out, transform 0.2s;
+        }
+
+        button:hover {
+            background: #e64a45;
+            transform: scale(1.05);
+        }
+
+        /* Result Area */
+        #result {
+            margin-top: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* Animal Card */
+        .animal-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            width: 250px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            backdrop-filter: blur(8px);
+            color: white;
+            text-align: left;
+        }
+
+        .animal-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .animal-card h3 {
+            margin-top: 0;
+            color: #ffaf7b;
+            font-size: 20px;
+        }
+
+        .animal-card p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .icon {
+            font-size: 18px;
+            margin-right: 5px;
+            color: #ff6f61;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐾 Animal Explorer</h1>
+    <div id="container">
+        <input type="text" id="searchQuery" placeholder="Enter an animal name (e.g., lion)" />
+        <button onclick="fetchAnimalData()">🔍 Search</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const API_KEY = "4xqZmZvEEOTzQpPDJkUXzg==rZlz1Lc2hCJNpWx8";  // Replace with your API Ninjas key
+
+        function fetchAnimalData() {
+            let animal = document.getElementById('searchQuery').value.trim().toLowerCase();
+            if (!animal) {
+                document.getElementById('result').innerHTML = "<p>Please enter a valid animal name!</p>";
+                return;
+            }
+
+            let apiUrl = `https://api.api-ninjas.com/v1/animals?name=${encodeURIComponent(animal)}`;
+            
+            fetch(apiUrl, { 
+                headers: { 'X-Api-Key': API_KEY }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    document.getElementById('result').innerHTML = "<p>No data found for this animal.</p>";
+                    return;
+                }
+                
+                let animalInfo = data[0]; // Get first result
+                let resultHTML = `
+                    <div class="animal-card">
+                        <h3>🐾 ${animalInfo.name}</h3>
+                        <p><i class="fas fa-paw icon"></i><strong>Family:</strong> ${animalInfo.taxonomy.family}</p>
+                        <p><i class="fas fa-leaf icon"></i><strong>Genus:</strong> ${animalInfo.taxonomy.genus}</p>
+                        <p><i class="fas fa-tree icon"></i><strong>Habitat:</strong> ${animalInfo.characteristics.habitat}</p>
+                        <p><i class="fas fa-utensils icon"></i><strong>Diet:</strong> ${animalInfo.characteristics.diet}</p>
+                    </div>
+                `;
+                document.getElementById('result').innerHTML = resultHTML;
+            })
+            .catch(error => document.getElementById('result').innerHTML = '<p>Failed to fetch animal data.</p>');
+        }
+    </script>
+</body>
+</html>
